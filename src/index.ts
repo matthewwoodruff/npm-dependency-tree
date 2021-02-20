@@ -1,0 +1,28 @@
+import {buildThrottler} from "./dependency-tree/adapter/package-retriever/middleware/promiseThrottler";
+import {NpmRegistryClient} from "./dependency-tree/adapter/package-retriever/npmRegistryClient";
+import {buildCache} from "./dependency-tree/adapter/package-retriever/middleware/cache";
+import {buildDejavu} from "./dependency-tree/adapter/package-retriever/middleware/dejavu";
+import express from "express";
+import {NpmPackage, NpmPackageRequest} from "./dependency-tree/retriever.types";
+import {buildDependencyTreeRetriever} from "./dependency-tree/retriever";
+import {configure} from "./dependency-tree/adapter/tree-retreiver/expressTreeRetriever";
+
+const npmRegistryClient = NpmRegistryClient("https://registry.npmjs.org");
+
+const throttler = buildThrottler(100);
+const throttlingPackageRetriever = (npmPackageRequest: NpmPackageRequest): Promise<NpmPackage> =>
+    throttler(() => npmRegistryClient.getNpmPackage(npmPackageRequest))
+
+const cachingPackageRetriever = buildCache(throttlingPackageRetriever);
+
+const dependencyTreeRetriever = buildDependencyTreeRetriever(cachingPackageRetriever, buildDejavu);
+
+
+const expressApp = express();
+
+configure(expressApp, dependencyTreeRetriever);
+const port = 3000;
+expressApp.listen(port, () => {
+    console.log(`Listening at http://localhost:${port}`)
+})
+
