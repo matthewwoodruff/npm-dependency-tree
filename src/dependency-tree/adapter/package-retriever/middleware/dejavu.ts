@@ -1,5 +1,5 @@
-import {PackageRetriever} from "../../../port/packageRetriever";
 import {NpmPackage, NpmPackageRequest} from "../../../retriever.types";
+import {PackageRetriever} from "../../../port/packageRetriever.types";
 
 export interface CanonicalNpmPackage extends NpmPackage {
     canonical?: boolean

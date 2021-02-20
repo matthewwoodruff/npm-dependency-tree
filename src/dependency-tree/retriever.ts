@@ -1,11 +1,10 @@
-import {PackageRetriever} from "./port/packageRetriever";
-import semver from "semver/preload";
 import {
     DependencyTree,
     DependencyTreeRetriever,
-    NpmPackageRequestCommand, Version
+    NpmPackageRequestCommand
 } from "./retriever.types";
 import {VersionResolver} from "./port/versionResolver.types";
+import {PackageRetriever} from "./port/packageRetriever.types";
 
 type PackageRetrieverBuilder = (pr: PackageRetriever) => PackageRetriever;
 
@@ -13,7 +12,7 @@ const buildPackageRetriever = (packageRetriever: PackageRetriever, sessionPackag
     sessionPackageRetriever ? sessionPackageRetriever(packageRetriever) : packageRetriever
 
 export const buildDependencyTreeRetriever =
-    (versionResolver: VersionResolver, packageRetriever: PackageRetriever, sessionPackageRetriever?: PackageRetrieverBuilder): DependencyTreeRetriever =>
+    (versionResolver: VersionResolver, packageRetriever: PackageRetriever, sessionPackageRetriever?: PackageRetrieverBuilder) =>
         (npmPackageRequest: NpmPackageRequestCommand) =>
             getDependencyTree(npmPackageRequest, versionResolver, buildPackageRetriever(packageRetriever, sessionPackageRetriever));
 

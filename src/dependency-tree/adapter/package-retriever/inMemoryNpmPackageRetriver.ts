@@ -1,5 +1,5 @@
 import {NpmPackage, NpmPackageRequest} from "../../retriever.types";
-import {PackageRetriever} from "../../port/packageRetriever";
+import {PackageRetriever} from "../../port/packageRetriever.types";
 
 export const buildPackageRetriever = (npmPackages: NpmPackage[]): PackageRetriever => {
     const npmPackageMap: Record<string, NpmPackage> = npmPackages
