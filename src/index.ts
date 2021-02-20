@@ -1,12 +1,12 @@
-import {buildThrottler} from "./dependency-tree/adapter/package-retriever/middleware/promiseThrottler";
 import {NpmRegistryClient} from "./dependency-tree/adapter/package-retriever/npmRegistryClient";
-import {buildCache} from "./dependency-tree/adapter/package-retriever/middleware/cache";
 import {buildDejavu} from "./dependency-tree/adapter/package-retriever/middleware/dejavu";
 import express from "express";
 import {NpmPackage, NpmPackageRequest} from "./dependency-tree/retriever.types";
 import {buildDependencyTreeRetriever} from "./dependency-tree/retriever";
 import {configure} from "./dependency-tree/adapter/tree-retreiver/expressTreeRetriever";
 import {resolve} from "./dependency-tree/adapter/version-resolver/simpleVersionResolver";
+import {buildThrottler} from "./dependency-tree/middleware/promiseThrottler";
+import {buildCache} from "./dependency-tree/middleware/cache";
 
 const npmRegistryClient = NpmRegistryClient("https://registry.npmjs.org");
 
