@@ -1,8 +1,8 @@
 import * as faker from "faker";
-import {buildPackageRetriever} from "./adapter/package-retriever/inMemoryNpmPackageRetriver";
 import {NpmPackage} from "./retriever.types";
 import {buildDependencyTreeRetriever} from "./retriever";
 import {resolve} from "./adapter/version-resolver/simpleVersionResolver";
+import {buildPackageRetriever} from "./adapter/package-retriever/inMemoryPackageRetriever";
 
 describe('retriever', () => {
 

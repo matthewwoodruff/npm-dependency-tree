@@ -18,7 +18,6 @@ const cachingPackageRetriever = buildCache(throttlingPackageRetriever);
 
 const dependencyTreeRetriever = buildDependencyTreeRetriever(resolve, cachingPackageRetriever, buildCircularDependencyPreventer);
 
-
 const expressApp = express();
 
 configure(expressApp, dependencyTreeRetriever);
