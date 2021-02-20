@@ -23,7 +23,6 @@
     "@types/pg": "^7.14.9",
     "@types/semver": "^7.3.4",
     "@types/treeify": "^1.0.0",
-    "commander": "^6.2.0",
     "express": "^4.17.1",
     "msw": "^0.26.2",
     "node-fetch": "^2.6.1",
