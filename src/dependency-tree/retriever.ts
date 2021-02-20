@@ -5,6 +5,7 @@ import {
     DependencyTreeRetriever,
     NpmPackageRequestCommand, Version
 } from "./retriever.types";
+import {VersionResolver} from "./port/versionResolver.types";
 
 type PackageRetrieverBuilder = (pr: PackageRetriever) => PackageRetriever;
 
@@ -12,30 +13,21 @@ const buildPackageRetriever = (packageRetriever: PackageRetriever, sessionPackag
     sessionPackageRetriever ? sessionPackageRetriever(packageRetriever) : packageRetriever
 
 export const buildDependencyTreeRetriever =
-    (packageRetriever: PackageRetriever, sessionPackageRetriever?: PackageRetrieverBuilder): DependencyTreeRetriever =>
+    (versionResolver: VersionResolver, packageRetriever: PackageRetriever, sessionPackageRetriever?: PackageRetrieverBuilder): DependencyTreeRetriever =>
         (npmPackageRequest: NpmPackageRequestCommand) =>
-            getDependencyTree(npmPackageRequest, buildPackageRetriever(packageRetriever, sessionPackageRetriever));
+            getDependencyTree(npmPackageRequest, versionResolver, buildPackageRetriever(packageRetriever, sessionPackageRetriever));
 
-const parseVersion = (rawVersion: string): Version => {
-    const raw = rawVersion;
-    try {
-        return {
-            request: semver.minVersion(rawVersion)?.raw || rawVersion,
-            raw
-        };
-    } catch (e) {
-        return { request: raw, raw }
-    }
-}
+const getDependencyTree = async (
+    {name, version}: NpmPackageRequestCommand,
+    versionResolver: VersionResolver,
+    packageRetriever: PackageRetriever): Promise<DependencyTree> => {
 
-const getDependencyTree = async ({name, version}: NpmPackageRequestCommand, packageRetriever: PackageRetriever): Promise<DependencyTree> => {
-
-    const parsedVersion = parseVersion(version)
+    const parsedVersion = versionResolver(version)
 
     const npmPackage = await packageRetriever({name, version: parsedVersion});
 
     const promises = npmPackage.dependencies
-        .map(dependency => getDependencyTree(dependency, packageRetriever));
+        .map(dependency => getDependencyTree(dependency, versionResolver, packageRetriever));
 
     return {
         ...npmPackage,

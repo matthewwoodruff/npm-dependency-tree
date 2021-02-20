@@ -2,6 +2,7 @@ import * as faker from "faker";
 import {buildPackageRetriever} from "./adapter/package-retriever/inMemoryNpmPackageRetriver";
 import {NpmPackage} from "./retriever.types";
 import {buildDependencyTreeRetriever} from "./retriever";
+import {resolve} from "./adapter/version-resolver/simpleVersionResolver";
 
 describe('retriever', () => {
 
@@ -16,7 +17,7 @@ describe('retriever', () => {
             dependencies: [],
         }])
 
-        const dependencyTree = await buildDependencyTreeRetriever(packageRetriever)({name, version});
+        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version});
         expect(dependencyTree).toEqual({
             name,
             version,
@@ -46,7 +47,7 @@ describe('retriever', () => {
 
         const packageRetriever = buildPackageRetriever([npmPackage, dependency])
 
-        const dependencyTree = await buildDependencyTreeRetriever(packageRetriever)({name, version});
+        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version});
         expect(dependencyTree).toEqual({
             name,
             version,
@@ -72,7 +73,7 @@ describe('retriever', () => {
 
         const packageRetriever = buildPackageRetriever([npmPackage])
 
-        const dependencyTree = await buildDependencyTreeRetriever(packageRetriever)({name, version: '^1.2.1'});
+        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version: '^1.2.1'});
         expect(dependencyTree.version).toEqual('1.2.1')
     })
 
@@ -87,7 +88,7 @@ describe('retriever', () => {
 
         const packageRetriever = jest.fn().mockReturnValueOnce(npmPackage);
 
-        const dependencyTree = await buildDependencyTreeRetriever(packageRetriever)({name, version: 'latest'});
+        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version: 'latest'});
         expect(dependencyTree?.version).toEqual('1.2.3')
     })
 
