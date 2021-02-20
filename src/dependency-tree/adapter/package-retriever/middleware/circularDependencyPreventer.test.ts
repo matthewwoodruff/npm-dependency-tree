@@ -1,7 +1,7 @@
 import faker from "faker";
-import {buildDejavu} from "./dejavu";
+import {buildCircularDependencyPreventer} from "./circularDependencyPreventer";
 
-describe('dejavu', () => {
+describe('circular dependency preventer', () => {
 
     it('should remove the dependencies from an already seen package', async () => {
         const name = faker.lorem.word();
@@ -13,12 +13,12 @@ describe('dejavu', () => {
         const npmPackage = {name, version, dependencies:[{name: depName, version: depVersion}]};
         const mock = jest.fn().mockReturnValue(npmPackage)
 
-        const dejavu = buildDejavu(mock);
+        const circularDependencyPreventer = buildCircularDependencyPreventer(mock);
 
         const packageRequest = {name, version: {request: version, raw: version}};
 
-        const firstResponse = await dejavu(packageRequest);
-        const secondResponse = await dejavu(packageRequest);
+        const firstResponse = await circularDependencyPreventer(packageRequest);
+        const secondResponse = await circularDependencyPreventer(packageRequest);
 
         expect(firstResponse).toEqual({
             ...npmPackage,

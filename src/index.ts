@@ -1,5 +1,4 @@
 import {NpmRegistryClient} from "./dependency-tree/adapter/package-retriever/npmRegistryClient";
-import {buildDejavu} from "./dependency-tree/adapter/package-retriever/middleware/dejavu";
 import express from "express";
 import {NpmPackage, NpmPackageRequest} from "./dependency-tree/retriever.types";
 import {buildDependencyTreeRetriever} from "./dependency-tree/retriever";
@@ -7,6 +6,7 @@ import {configure} from "./dependency-tree/adapter/tree-retreiver/expressTreeRet
 import {resolve} from "./dependency-tree/adapter/version-resolver/simpleVersionResolver";
 import {buildThrottler} from "./dependency-tree/middleware/promiseThrottler";
 import {buildCache} from "./dependency-tree/middleware/cache";
+import {buildCircularDependencyPreventer} from "./dependency-tree/adapter/package-retriever/middleware/circularDependencyPreventer";
 
 const npmRegistryClient = NpmRegistryClient("https://registry.npmjs.org");
 
@@ -16,7 +16,7 @@ const throttlingPackageRetriever = (npmPackageRequest: NpmPackageRequest): Promi
 
 const cachingPackageRetriever = buildCache(throttlingPackageRetriever);
 
-const dependencyTreeRetriever = buildDependencyTreeRetriever(resolve, cachingPackageRetriever, buildDejavu);
+const dependencyTreeRetriever = buildDependencyTreeRetriever(resolve, cachingPackageRetriever, buildCircularDependencyPreventer);
 
 
 const expressApp = express();

@@ -5,7 +5,7 @@ export interface CanonicalNpmPackage extends NpmPackage {
     canonical?: boolean
 }
 
-export const buildDejavu = (packageRetriever: PackageRetriever): PackageRetriever => {
+export const buildCircularDependencyPreventer = (packageRetriever: PackageRetriever): PackageRetriever => {
     let seen: Record<string, boolean> = {};
     return async (npmPackageRequest: NpmPackageRequest): Promise<CanonicalNpmPackage> => {
         const npmPackageResponse = await packageRetriever(npmPackageRequest);
