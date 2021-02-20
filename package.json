@@ -17,10 +17,8 @@
     "test": "jest --config=jest.config.ts"
   },
   "dependencies": {
-    "@types/axios": "^0.14.0",
     "@types/express": "^4.17.11",
     "@types/node-fetch": "^2.5.7",
-    "@types/pg": "^7.14.9",
     "@types/semver": "^7.3.4",
     "@types/treeify": "^1.0.0",
     "express": "^4.17.1",
