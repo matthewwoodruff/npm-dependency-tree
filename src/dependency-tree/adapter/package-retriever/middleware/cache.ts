@@ -1,17 +1,16 @@
-import {PackageRetriever} from "../../../port/packageRetriever";
-import {NpmPackage, NpmPackageRequest} from "../../../retriever.types";
 
-export const buildCache = (packageRetriever: PackageRetriever): PackageRetriever => {
-    let cache: Record<string,Promise<NpmPackage>> = {};
-    return (npmPackageRequest: NpmPackageRequest): Promise<NpmPackage> => {
-        const npmPackageKey = JSON.stringify(npmPackageRequest);
+type CacheFunction<T, R> = (arg0: T) => R
+export function buildCache<T, R>(cacheFunction: CacheFunction<T, R>): CacheFunction<T, R> {
+    const cache: Record<string,R> = {};
+    return (requestObject: T): R => {
+        const key = JSON.stringify(requestObject);
 
-        const cacheElement = cache[npmPackageKey];
-        if (cacheElement) return cacheElement;
+        const cachedValue = cache[key];
+        if (cachedValue) return cachedValue;
 
-        const npmPackageResponsePromise = packageRetriever(npmPackageRequest);
-        cache[npmPackageKey] = npmPackageResponsePromise;
+        const valueToCache = cacheFunction(requestObject);
+        cache[key] = valueToCache;
 
-        return npmPackageResponsePromise;
+        return valueToCache;
     }
 }
