@@ -14,23 +14,22 @@ export const configure = (express: core.Express, dependencyTreeRetriever: Depend
             version: req.params.version
         }
 
-        // res.send(formatTree(await dependencyTreeRetriever(packageRequest)))
-        res.send(await dependencyTreeRetriever(packageRequest))
+        res.send(formatTree(await dependencyTreeRetriever(packageRequest)))
     })
 };
 
-type Asd = {
+type PackageData = {
     version: string,
-    dependencies: PackageView
+    dependencies: PackageTree
 }
-type PackageView = Record<string, Asd>
+type PackageTree = Record<string, PackageData>
 
-const build = (tree: DependencyTree): PackageView => ({
-    [tree!.name]: {
-        version: tree!.version,
-        dependencies: tree!.dependencies.map(build).reduce((p, c) => ({...p, ...c}), {})
+const buildPackageTree = (tree: DependencyTree): PackageTree => ({
+    [tree.name]: {
+        version: tree.version,
+        dependencies: tree.dependencies.map(buildPackageTree).reduce((p, c) => ({...p, ...c}), {})
     }
 })
 
 export const formatTree = (tree: DependencyTree): string =>
-    treeify.asTree(build(tree), true, true)
+    treeify.asTree(buildPackageTree(tree), true, true)
