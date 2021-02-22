@@ -1,8 +1,9 @@
 import * as faker from "faker";
 import {NpmPackage} from "./retriever.types";
 import {buildDependencyTreeRetriever} from "./retriever";
-import {resolve} from "./adapter/version-resolver/simpleVersionResolver";
 import {buildPackageRetriever} from "./adapter/package-retriever/inMemoryPackageRetriever";
+
+const testResolver = (version: string) => ({raw: version, request: version})
 
 describe('retriever', () => {
 
@@ -17,7 +18,7 @@ describe('retriever', () => {
             dependencies: [],
         }])
 
-        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version});
+        const dependencyTree = await buildDependencyTreeRetriever(testResolver, packageRetriever)({name, version});
         expect(dependencyTree).toEqual({
             name,
             version,
@@ -47,7 +48,7 @@ describe('retriever', () => {
 
         const packageRetriever = buildPackageRetriever([npmPackage, dependency])
 
-        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version});
+        const dependencyTree = await buildDependencyTreeRetriever(testResolver, packageRetriever)({name, version});
         expect(dependencyTree).toEqual({
             name,
             version,
@@ -59,37 +60,6 @@ describe('retriever', () => {
                 dependencies: []
             }]
         })
-    })
-
-    it('should rewrite version to min version', async () => {
-
-        const name = faker.lorem.word();
-        const npmPackage: NpmPackage = {
-            name,
-            version: '1.2.1',
-            ok: true,
-            dependencies: [],
-        };
-
-        const packageRetriever = buildPackageRetriever([npmPackage])
-
-        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version: '^1.2.1'});
-        expect(dependencyTree.version).toEqual('1.2.1')
-    })
-
-    it('allows latest as valid version', async () => {
-
-        const name = faker.lorem.word();
-        const npmPackage = {
-            name,
-            version: '1.2.3',
-            dependencies: [],
-        };
-
-        const packageRetriever = jest.fn().mockReturnValueOnce(npmPackage);
-
-        const dependencyTree = await buildDependencyTreeRetriever(resolve, packageRetriever)({name, version: 'latest'});
-        expect(dependencyTree?.version).toEqual('1.2.3')
     })
 
 })
