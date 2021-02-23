@@ -2,6 +2,14 @@
 
 [![Build Status](https://travis-ci.org/matthewwoodruff/npm-dependency-tree.svg?branch=main)](https://travis-ci.org/matthewwoodruff/npm-dependency-tree)
 
+### How to run
+
+`yarn start` - Starts the server
+
+`yarn build` - Runs the typescript compilation, tests and dependency audit
+
+This has been tested with `node 12/14` and `yarn 1.22.10` 
+
 ### Design
 Given a package name and version a package is retrieved using package retriever and version resolver functions. The dependencies of the found package are then requested recursively through the same process. 
 
@@ -12,6 +20,7 @@ The codebase is influenced by hexagonal architecture where ports and adapters ar
 An interface that defines for a package request it must return a package. There are two of implementations of this function that can be composed to provide additional benefit.
 
 **npmRegistryClient** - Used to retrieve a package from npm registry
+
 **circularDependencyPreventer** - Used to prevent circular dependencies by identifying on occurrence of a package as being canonical. This package retriever is also request-based in the solution so that its functionality is isolated to a specific api call. 
 
 #### Version resolver
@@ -21,6 +30,7 @@ An interface to resolve a given version. The versions defined in a package's dep
 Generic middleware is used for caching and throttling. 
 
 *cache* - Used to cache the response of a function given the argument to the function. This has avoided repeat network requests for the same package and version, and to speed up response times for subsequent requests.
+
 *throttler* - Used to limit the number of concurrent function invocations that result in a promise. This is to avoid spamming npm registry and reaching network request limits of a machine.
 
 
