@@ -16,21 +16,21 @@ The retriever returns a dependency tree for a package and version using package 
 The codebase is influenced by hexagonal architecture where ports and adapters allow for separation of core domain logic from external expectations. Package retriever and version resolver ports are defined and implementations found in the adapter package.
 
 #### Package retriever
-A port defining for a package request it must return a package. There are two of implementations of this function that can be composed to provide additional benefit.
+A port defining a package is returned given a package request. There are two of implementations of this function that can be composed to provide additional benefit.
 
-`npmRegistryClient` Used to retrieve a package from npm registry
+`npmRegistryClient` - Used to retrieve a package from npm registry
 
-`circularDependencyPreventer` Used to prevent circular dependencies by identifying on occurrence of a package as being canonical. This package retriever is also request-based so that its functionality is isolated to a specific api call. 
+`circularDependencyPreventer` - Used to prevent circular dependencies by identifying an occurrence of a package as being canonical. This package retriever is request-based so that its functionality is isolated to a specific api call. 
 
 #### Version resolver
-A port to resolve a given version to a specific version. The versions defined in a package's dependency list will often not be a specific value such as 1.2.3, often it may look like ^1.2.3. The version resolver decides which specific version to use as a request to npm registry can only be made with specific values or an alias. There is currently only one implementation that either finds the minimum version for a specification or returns the specification if an alias, or an invalid semver. Another implementation could be added to return the latest version but this would require additional requests to npm registry. 
+A port to resolve a given version to a specific version. The versions defined in a package's dependency list will often not be a specific value such as `1.2.3`, often it may look like `^1.2.3`. The version resolver decides which specific version to use as a request to npm registry can only be made with specific values or an alias. There is currently only one implementation that either finds the minimum version for a specification or returns the specification if an alias, or an invalid semver. Another implementation could be added to return the latest version but this would require additional requests to npm registry. 
 
 #### Middleware
 Additional middleware enables caching and throttling. 
 
-`cache` Used to cache the response of a function given the argument to the function. This has avoided repeat network requests for the same package and version, and to speed up response times for subsequent requests.
+`cache` - Used to cache the response of a function given the argument to the function. This has avoided repeat network requests for the same package and version, and to speed up response times for subsequent requests.
 
-`throttler` Used to limit the number of concurrent function invocations that result in a promise. This is to avoid spamming npm registry and reaching network request limits of a machine.
+`throttler` - Used to limit the number of concurrent function invocations that result in a promise. This is to avoid spamming npm registry and reaching network request limits of a machine.
 
 ### Assumptions
 
